@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Main-Class: smtpserver.SmtpServerRunner
+Class-Path: lib/dnsjava-2.0.6.jar
+
