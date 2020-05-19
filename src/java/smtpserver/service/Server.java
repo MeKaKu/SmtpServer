@@ -40,7 +40,7 @@ public class Server implements Runnable {
         }
         while (true) {
             try {
-                System.out.println("Listening for a connection.");
+                //System.out.println("Listening for a connection.");
                 Socket socket = serverSocket.accept(); //监听
                 System.out.println("Connection accepted by." + socket.getInetAddress().getHostName());
                 new Thread(new Connection(socket, address)).start(); //创建新的线程处理连接请求

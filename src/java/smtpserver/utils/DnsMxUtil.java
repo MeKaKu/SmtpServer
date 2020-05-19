@@ -30,6 +30,10 @@ public class DnsMxUtil {
     }
 
     public static boolean isMailServer(String hostname,String address) throws IOException {
+        String[] dom = hostname.split(".");
+        if(dom.length<2){
+            return false;
+        }
         //if(!InetAddress.getByName(hostname).isReachable(30)) return false;
         return address.equals(InetAddress.getByName(hostname).getHostAddress());
     }

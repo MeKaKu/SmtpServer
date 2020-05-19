@@ -5,11 +5,9 @@ import smtpserver.storage.Mail;
 import smtpserver.utils.Base64Util;
 import smtpserver.utils.DnsMxUtil;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
+import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 
 public class Connection implements Runnable {
@@ -45,7 +43,7 @@ public class Connection implements Runnable {
         BufferedReader bufferedReader = null;
         PrintStream printStream = null;
         try {
-            bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -59,7 +57,7 @@ public class Connection implements Runnable {
         assert printStream != null;
         printStream.println("220 diker.xyz Smtp Mail Server.");
 
-        while(!isEnd){
+        while(!isEnd&&socket.isConnected()){
             assert bufferedReader != null;
             try {
                 readline = bufferedReader.readLine();
@@ -68,13 +66,13 @@ public class Connection implements Runnable {
             }
             assert readline != null;
             readline = readline.trim();
-            System.out.println("R:" + readline);
+            System.out.println("Client:" + readline);
             String[] inputs = readline.split(":");
             //System.out.println(readline);
             inputs[0] = inputs[0].trim();
             inputs[0] = inputs[0].toLowerCase();//命令不区分大小写
             String[] heads = inputs[0].split(" ");//命令头
-            System.out.println("msgHead:" + inputs[0]);
+            //System.out.println("msgHead:" + inputs[0]);
             if(heads.length==2&&(heads[0].equals("helo")||heads[0].equals("ehlo"))){ ////helo/ehlo hostname
                 //isServer = DnsMxUtil.isMailServer(heads[1],socket.getInetAddress().getHostAddress());
                 try {
@@ -83,11 +81,11 @@ public class Connection implements Runnable {
                     e.printStackTrace();
                 }
                 if(isServer){
-                    printStream.println("250-mail.diker.xyz-ready for transport\n250 OK");
+                    printStream.println("250-mail.diker.xyz-ready for transport\r\n250 OK");
                     System.out.println("MailServer");
                 }
                 else{
-                    printStream.println("250-mail.diker.xyz\n250 OK");
+                    printStream.println("250-mail.diker.xyz\r\n250 OK");
                 }
                 isHelo = true;
                 isAuthing=isAuth=isAuthAccount=false;

@@ -13,7 +13,7 @@ public class Mail {
     private String mailFrom; //发件人邮箱
     private String rcptTo; //收件人邮箱
     private String subject; //邮件主题
-    private String data; //邮件内容
+    private String data = ""; //邮件内容
     private int length;//长度
     private String date;//日期
 
@@ -26,7 +26,7 @@ public class Mail {
     }
 
     public void setData(String msg){
-        data = msg;
+        data = msg+"\r\n";
     }
 
     public void setSubject(String sub){
@@ -66,6 +66,7 @@ public class Mail {
     }
 
     public void commit(){
+        //data = new String(data.getBytes(), StandardCharsets.UTF_8);
         length = mailFrom.length()+rcptTo.length()+subject.length()+data.length();
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
         date = df.format(new Date());
@@ -87,6 +88,7 @@ public class Mail {
         bufferedWriter.write("From:"+mailFrom);
         bufferedWriter.newLine();
         bufferedWriter.write("To:"+rcptTo+"\r\n");
+        bufferedWriter.write("Subject:"+subject+"\r\n");
         bufferedWriter.write(data);
         bufferedWriter.close();
 
@@ -95,8 +97,7 @@ public class Mail {
     //客户端向服务器发送邮件
     public boolean sendMail(String account,String password) throws IOException {
         Socket socket = new Socket();
-        socket.connect(new InetSocketAddress("mail.diker.com",25),5000);
-        socket.setSoTimeout(10000);
+        socket.connect(new InetSocketAddress("mail.diker.xyz",25),5000);
         if(!socket.isConnected()){
             System.out.println("Connected failed.");
             return false;
@@ -123,13 +124,16 @@ public class Mail {
             assert bufferedReader != null;
             //220
             readline = bufferedReader.readLine();
-            if(readline.split(" ")[0].equals("220")){
+            if(!readline.split(" ")[0].equals("220")){
                 System.out.println("connect returned error");
                 return false;
             }
             //helo
             printStream.println("helo client");
             readline = bufferedReader.readLine();
+            if(readline.split("-")[0].equals("250")){
+                readline = bufferedReader.readLine();
+            }
             if(!readline.split(" ")[0].equals("250")){
                 System.out.println("helo returned error.");
                 return false;
