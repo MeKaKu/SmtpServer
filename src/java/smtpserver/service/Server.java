@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +44,7 @@ public class Server implements Runnable {
                 Socket socket = serverSocket.accept(); //监听
                 System.out.println("Connection accepted by." + socket.getInetAddress().getHostName());
                 new Thread(new Connection(socket, address)).start(); //创建新的线程处理连接请求
-            } catch (IOException ex) {
+            } catch (IOException | SQLException | ClassNotFoundException ex) {
                 ex.printStackTrace();
                 break;
             }

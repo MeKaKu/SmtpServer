@@ -3,16 +3,19 @@ package smtpserver.storage;
 import smtpserver.utils.Base64Util;
 
 import java.io.*;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Mail {
     private static final String path = "SmtpServer//EmailBox//";
-    private static String mailFrom; //发件人邮箱
-    private static String rcptTo; //收件人邮箱
-    private static String subject; //邮件主题
-    private static String data; //邮件内容
+    private String mailFrom; //发件人邮箱
+    private String rcptTo; //收件人邮箱
+    private String subject; //邮件主题
+    private String data; //邮件内容
+    private int length;//长度
+    private String date;//日期
 
     public void setMailFrom(String from){
         mailFrom = from.split("\r\n")[0];
@@ -30,6 +33,25 @@ public class Mail {
         subject = sub;
     }
 
+    public String getMailFrom(){
+        return mailFrom;
+    }
+    public String getRcptTo(){
+        return rcptTo;
+    }
+    public String getSubject(){
+        return subject;
+    }
+    public  String getData(){
+        return data;
+    }
+    public int getLength(){
+        return length;
+    }
+    public String getDate(){
+        return date;
+    }
+
     public void dataAdd(String msg){
         data += msg;
         data += "\r\n";
@@ -38,7 +60,15 @@ public class Mail {
     public void reset(){
         mailFrom = "";
         rcptTo = "";
+        subject = "";
         data = "";
+        length = 0;
+    }
+
+    public void commit(){
+        length = mailFrom.length()+rcptTo.length()+subject.length()+data.length();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        date = df.format(new Date());
     }
 
     //保存邮件至path/rcptTo/receiveBox/time.txt
@@ -64,7 +94,13 @@ public class Mail {
 
     //客户端向服务器发送邮件
     public boolean sendMail(String account,String password) throws IOException {
-        Socket socket = new Socket("mail.diker.xyz",25);
+        Socket socket = new Socket();
+        socket.connect(new InetSocketAddress("mail.diker.com",25),5000);
+        socket.setSoTimeout(10000);
+        if(!socket.isConnected()){
+            System.out.println("Connected failed.");
+            return false;
+        }
         boolean ret = true;
         if(0==mailFrom.length()||0==rcptTo.length()||0==data.length()){
             return false;
@@ -85,7 +121,12 @@ public class Mail {
             }
             assert printStream != null;
             assert bufferedReader != null;
-
+            //220
+            readline = bufferedReader.readLine();
+            if(readline.split(" ")[0].equals("220")){
+                System.out.println("connect returned error");
+                return false;
+            }
             //helo
             printStream.println("helo client");
             readline = bufferedReader.readLine();
@@ -98,51 +139,60 @@ public class Mail {
             readline = bufferedReader.readLine();
             if(!readline.split(" ")[0].equals("334")){
                 System.out.println("auth login returned error.");
+                return false;
             }
             //account
             printStream.println(Base64Util.EncodeBase64(account.getBytes()));
             readline = bufferedReader.readLine();
             if(!readline.split(" ")[0].equals("334")){
                 System.out.println("account returned error.");
+                return false;
             }
             //password
             printStream.println(Base64Util.EncodeBase64(password.getBytes()));
             readline = bufferedReader.readLine();
             if(!readline.split(" ")[0].equals("235")){
                 System.out.println("password returned error.");
+                return false;
             }
             //mail from
             printStream.println("mail from:<"+mailFrom+">");
             readline = bufferedReader.readLine();
             if(!readline.split(" ")[0].equals("250")){
                 System.out.println("mail from returned error.");
+                return false;
             }
             //rcpt to
             printStream.println("rcpt to:<"+rcptTo+">");
             readline = bufferedReader.readLine();
             if(!readline.split(" ")[0].equals("250")){
                 System.out.println("rcpt to returned error.");
+                return false;
             }
             //data
             printStream.println("data");
             readline = bufferedReader.readLine();
             if(!readline.split(" ")[0].equals("354")){
                 System.out.println("data returned error.");
+                return false;
             }
             //mail body
             printStream.println(subject+"\r\n"+data+".");
             readline = bufferedReader.readLine();
             if(!readline.split(" ")[0].equals("250")){
                 System.out.println("mail body returned error.");
+                return false;
             }
             //quit
             printStream.println("quit");
             readline = bufferedReader.readLine();
             if(!readline.split(" ")[0].equals("221")){
                 System.out.println("quit returned error.");
+                return false;
             }
 
         }
-        return ret;
+        socket.close();
+        return true;
     }
 }
