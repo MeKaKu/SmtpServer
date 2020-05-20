@@ -32,6 +32,16 @@ public class mySQL {
         return resultSet.next();
     }
 
+    public void setPwd(String account,String nPwd) throws SQLException {
+        String sql = "UPDATE `user` SET `password`='"+nPwd+"' WHERE address='"+account+"'";
+        statement.executeUpdate(sql);
+    }
+
+    public void setName(String account,String name) throws SQLException {
+        String sql = "UPDATE `user` SET rname='"+name+"' WHERE address='"+account+"'";
+        statement.executeUpdate(sql);
+    }
+
     public boolean addMail(Mail mail) throws SQLException {
         ResultSet resultSet = statement.executeQuery("SELECT COUNT(*) AS cnt FROM mail");
         if(resultSet.next()) {
@@ -103,4 +113,5 @@ public class mySQL {
             statement.executeUpdate(sql);
         }
     }
+
 }
