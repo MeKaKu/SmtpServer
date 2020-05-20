@@ -12,6 +12,7 @@ public class SmtpServerRunner {
 
             Server server = new Server(25, "diker.xyz");
             new Thread(server).start();
+            //todo make a thread to process send mails in queue...
 
         } catch (IOException ex) {
             Logger.getLogger(SmtpServerRunner.class.getName()).log(Level.SEVERE, null, ex);

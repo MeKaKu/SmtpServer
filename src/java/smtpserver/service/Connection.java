@@ -156,7 +156,7 @@ public class Connection implements Runnable {
                             else{
                                 printStream.println("535 Login failed.");
                             }
-                        } catch (ClassNotFoundException | SQLException e) {
+                        } catch (SQLException e) {
                             e.printStackTrace();
                         }
                         isAuthing=isAuthAccount=false;
@@ -173,7 +173,7 @@ public class Connection implements Runnable {
                         }
                         try {
                             mysql.addMail(mail);
-                        } catch (ClassNotFoundException | SQLException e) {
+                        } catch (SQLException e) {
                             System.out.println("Save mail to database failed.");
                             e.printStackTrace();
                         }
