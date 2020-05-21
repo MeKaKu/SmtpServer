@@ -48,6 +48,9 @@ public class mySQL {
             cnt = resultSet.getInt("cnt");
             resultSet.close();
             if(!mail.getRcptTo().equals("*@diker.xyz")) {
+                if(!isUserExist(mail.getRcptTo())){
+                    return false;
+                }
                 addMailSql(mail,mail.getRcptTo());
             }
             else{ //群发

@@ -71,13 +71,13 @@ public class Task implements  Runnable{
         account = Base64Util.DecodeBase64(bufferedReader.readLine());
         String password = Base64Util.DecodeBase64(bufferedReader.readLine());
         if(!mysql.isUserExist(account)){
-            printStream.println("251-用户不存在"); //用户不存在
+            printStream.println("1-用户不存在"); //用户不存在
         }
         else if(!mysql.getUser(account, password)){
-            printStream.println("252-密码错误"); //密码错误
+            printStream.println("2-密码错误"); //密码错误
         }
         else{
-            printStream.println("250-操作成功"); //验证成功
+            printStream.println("0-操作成功"); //验证成功
             return true;
         }
         return false;

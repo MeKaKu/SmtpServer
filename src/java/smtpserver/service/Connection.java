@@ -98,30 +98,43 @@ public class Connection implements Runnable {
                 if(!heloAndAuth(printStream)) continue;
                 inputs[1]=inputs[1].trim();
                 String[] tails = inputs[1].split(" ");
-                if(tails.length==1){
+                if(tails.length==1&&tails[0].length()>2){
                     mail.setMailFrom(tails[0].substring(1,tails[0].length()-1));
-                    printStream.println("250 OK");
-                    isMail = true;
+                    if(mail.getMailFrom().split("@").length==2){
+                        printStream.println("250 OK");
+                        isMail = true;
+                    }
+                    else printStream.println("550 Failure");
                 }
-                else{
-                    printStream.println("503 Invalid input.");
-                }
+                else printStream.println("502 Invalid input.");
             }
             else if(inputs.length==2&&heads.length==2&&heads[0].equals("rcpt")&&heads[1].equals("to")){ //rcpt to : <234@diker.com>
                 if(!heloAndAuth(printStream)) continue;
                 if(!isMail){
                     printStream.println("503 Send command mail from first.");
+                    continue;
                 }
                 inputs[1]=inputs[1].trim();
                 String[] tails = inputs[1].split(" ");
-                if(tails.length==1){
+                if(tails.length==1&&tails[0].length()>2){
                     mail.setRcptTo(tails[0].substring(1,tails[0].length()-1));
-                    printStream.println("250 OK");
-                    isRcpt = true;
+                    if(mail.getRcptTo().split("@").length==2){
+                        try {
+                            if(mysql.isUserExist(mail.getRcptTo())) { //本地用户
+                                printStream.println("250 OK");
+                                isRcpt=true;
+                            }
+                            else if(mail.getRcptTo().split("@")[1].equals("diker.xyz")) //用户不存在
+                                printStream.println("251 User not local");
+                            else
+                                printStream.println("550 No such user here"); //非本地用户
+                        } catch (SQLException throwables) {
+                            throwables.printStackTrace();
+                        }
+                    }
+                    else printStream.println("550 Failure.");
                 }
-                else{
-                    printStream.println("503 Invalid input.");
-                }
+                else printStream.println("502 Invalid input.");
             }
             else if(inputs.length==1&&heads.length==1&&heads[0].equals("data")){ //data
                 if(!heloAndAuth(printStream)) continue;
@@ -138,7 +151,7 @@ public class Connection implements Runnable {
                 isEnd = true;
             }
             else{
-                if(isAuthing&&inputs.length==1){
+                if(isAuthing&&inputs.length==1){ //auth login...
                     if(!isAuthAccount){
                         account = Base64Util.DecodeBase64(readline);
                         System.out.println("account:"+account);
