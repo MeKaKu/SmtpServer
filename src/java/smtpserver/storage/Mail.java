@@ -68,13 +68,13 @@ public class Mail {
     public void commit(){
         //data = new String(data.getBytes(), StandardCharsets.UTF_8);
         length = mailFrom.length()+rcptTo.length()+subject.length()+data.length();
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
         date = df.format(new Date());
     }
 
     //保存邮件至path/rcptTo/receiveBox/time.txt
     public void solveToFile() throws IOException {
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");//设置日期格式
         String fileNameString = df.format(new Date());// new Date()为获取当前系统时间
         String dirString = path + rcptTo + "/receiveBox";
         File dir = new File(dirString);

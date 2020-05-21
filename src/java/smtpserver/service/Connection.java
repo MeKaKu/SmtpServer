@@ -56,7 +56,7 @@ public class Connection implements Runnable {
             e.printStackTrace();
         }
         try {
-            printStream = new PrintStream(socket.getOutputStream());
+            printStream = new PrintStream(socket.getOutputStream(),true,"UTF-8");
         } catch (IOException e) {
             e.printStackTrace();
         }

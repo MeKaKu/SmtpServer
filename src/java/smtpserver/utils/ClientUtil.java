@@ -275,7 +275,7 @@ public class ClientUtil {
                 return false;
             }
             bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            printStream = new PrintStream(socket.getOutputStream());
+            printStream = new PrintStream(socket.getOutputStream(),true,"UTF-8");
         } catch (IOException e) {
             e.printStackTrace();
             return false;
