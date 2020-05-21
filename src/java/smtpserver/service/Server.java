@@ -6,13 +6,12 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Server implements Runnable {
     private final int port; //端口号
     private final ServerSocket serverSocket; //服务socket
     private final String address; //服务器地址（域名）
+    private static boolean pause = false;
 
     public Server(int port, String address) throws IOException {
         this.port = port;
@@ -20,14 +19,16 @@ public class Server implements Runnable {
         this.serverSocket = new ServerSocket(port); //创建socket
     }
 
-    private String[] getAnonOnly(String[] suites) {
-        List<String> resultList = new ArrayList<>();
-        for (String s : suites) {
-            if (s.contains("anon")) {
-                resultList.add(s);
-            }
-        }
-        return resultList.toArray(new String[resultList.size()]);
+    public static boolean getPause(){
+        return pause;
+    }
+
+    public static void pauseThread(){
+        pause = true;
+    }
+
+    public static void resumeThread(){
+        pause = false;
     }
 
     @Override
@@ -40,7 +41,6 @@ public class Server implements Runnable {
         }
         while (true) {
             try {
-                //System.out.println("Listening for a connection.");
                 Socket socket = serverSocket.accept(); //监听
                 System.out.println("Connection accepted by." + socket.getInetAddress().getHostName());
                 new Thread(new Connection(socket, address)).start(); //创建新的线程处理连接请求

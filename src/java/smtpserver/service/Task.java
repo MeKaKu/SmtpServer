@@ -51,10 +51,33 @@ public class Task implements  Runnable{
                     mysql.setPwd(account,Base64Util.DecodeBase64(readline));
                 }
             }
-            else if(readline.equals("503")){
+            else if(readline.equals("503")){ //修改用户名
                 if(login()){
                     readline = bufferedReader.readLine();
                     mysql.setName(account, readline);
+                }
+            }
+            else if(readline.equals("555")){ //关闭smtp
+                if(login()){
+                    if(!Server.getPause()) Server.pauseThread();
+                }
+            }
+            else if(readline.equals("556")){
+                if(login()){
+                    if(Server.getPause()) Server.resumeThread();
+                }
+            }
+            else if(readline.equals("557")){
+                account = Base64Util.DecodeBase64(bufferedReader.readLine());
+                String password = Base64Util.DecodeBase64(bufferedReader.readLine());
+                if(!mysql.getUser(account, password)){
+                    printStream.println("2-密码错误"); //密码错误
+                }
+                else if(Server.getPause()){
+                    printStream.println("1-SMTP暂停"); //SMTP暂停
+                }
+                else{
+                    printStream.println("0-SMTP启动"); //SMTP启动
                 }
             }
         } catch (IOException | SQLException e) {

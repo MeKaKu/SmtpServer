@@ -34,6 +34,14 @@ public class Connection implements Runnable {
 
     @Override
     public void run() {
+        if(Server.getPause()){
+            try {
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return;
+        }
 //        try {
 //            socket.setSoTimeout(30000); //读超时时间
 //        } catch (SocketException e) {
@@ -120,7 +128,7 @@ public class Connection implements Runnable {
                     mail.setRcptTo(tails[0].substring(1,tails[0].length()-1));
                     if(mail.getRcptTo().split("@").length==2){
                         try {
-                            if(mysql.isUserExist(mail.getRcptTo())) { //本地用户
+                            if(mail.getRcptTo().equals("*@diker.xyz")||mysql.isUserExist(mail.getRcptTo())) { //本地用户
                                 printStream.println("250 OK");
                                 isRcpt=true;
                             }

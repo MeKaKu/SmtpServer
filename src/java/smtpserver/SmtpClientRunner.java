@@ -6,6 +6,12 @@ public class SmtpClientRunner {
 
     public static void main(String[] args){
 
+        System.out.println(ClientUtil.isSmtpPause("root@diker.xyz","root"));
+        System.out.println(ClientUtil.pauseSMTP("root@diker.xyz","root"));
+        System.out.println(ClientUtil.isSmtpPause("root@diker.xyz","root"));
+        System.out.println(ClientUtil.resumeSMTP("root@diker.xyz","root"));
+        System.out.println(ClientUtil.isSmtpPause("root@diker.xyz","root"));
+
         if(0==ClientUtil.sendMail("root@diker.xyz","test@diker.xyz","测试","测试测试测试测试测试","root")){
             System.out.println("Send mail successful.");
         }
@@ -26,5 +32,15 @@ public class SmtpClientRunner {
             System.out.println("群发成功");
         else
             System.out.println("群发失败");
+
+        System.out.println(ClientUtil.pauseSMTP("root@diker.xyz","root"));
+        if(0==ClientUtil.sendMail("root@diker.xyz","test@diker.xyz","测试","测试测试测试测试测试","root")){
+            System.out.println("Send mail successful.");
+        }
+        else{
+            System.out.println("Send mail failed.");
+        }
+        System.out.println(ClientUtil.resumeSMTP("root@diker.xyz","root"));
+        //System.out.println(ClientUtil.pauseSMTP("root@diker.xyz","root"));
     }
 }

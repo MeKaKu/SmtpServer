@@ -15,6 +15,51 @@ public class ClientUtil {
     private static PrintStream printStream;
 
     /**
+     * 暂停SMTP服务
+     * @param account 账号（邮箱地址）
+     * @param password 密码
+     * @return  0 操作成功
+     *          1 账号不存在
+     *          2 密码错误
+     *         -1 连接失败
+     *         -2 异常
+     *         -3 参数不正确
+     * */
+    public static int pauseSMTP(String account,String password){
+        return exe(account,password,"555");
+    }
+
+    /**
+     * 开启SMTP服务
+     * @param account 账号（邮箱地址）
+     * @param password 密码
+     * @return  0 操作成功
+     *          1 账号不存在
+     *          2 密码错误
+     *         -1 连接失败
+     *         -2 异常
+     *         -3 参数不正确
+     * */
+    public static int resumeSMTP(String account,String password){
+        return exe(account,password,"556");
+    }
+
+    /**
+     * 查看SMTP服务状态
+     * @param account 账号（邮箱地址）
+     * @param password 密码
+     * @return  0 SMTP已启动（启动）
+     *          1 SMTP未启动（暂停）
+     *          2 认证失败(账号不存在或者密码错误)
+     *         -1 连接失败
+     *         -2 异常
+     *         -3 参数不正确
+     * */
+    public static int isSmtpPause(String account,String password){
+        return exe(account,password,"557");
+    }
+
+    /**
      * 登录验证
      * @param account 账号（邮箱地址）
      * @param password 密码
@@ -26,19 +71,7 @@ public class ClientUtil {
      *         -3 参数不正确
      * */
     public static int login(String account, String password) {
-        if(account.length()==0||password.length()==0) return -3;
-        if(!connect("diker.xyz",2525)) return -1;
-        printStream.println("501");
-        printStream.println(Base64Util.EncodeBase64(account.getBytes()));
-        printStream.println(Base64Util.EncodeBase64(password.getBytes()));
-        try {
-            readline = bufferedReader.readLine();
-            disconnect();
-            return Integer.parseInt(readline.split("-")[0]);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return -2;
-        }
+        return exe(account,password,"501");
     }
 
     /**
@@ -133,11 +166,15 @@ public class ClientUtil {
      *         -1 连接失败
      *         -2 异常
      *         -3 参数不正确
+     *         -4 SMTP未开启
      * */
     public static int sendMail(String mailFrom,String rcptTo,String subject,String data,String password) {
-        boolean ret = true;
+        if(isSmtpPause(mailFrom,password)!=0) return -4;
         if (0 == mailFrom.length() || 0 == rcptTo.length() ||0==password.length()) return -3;
-        if (!connect("mail.diker.xyz",25)) return -1;
+        if (!connect("mail.diker.xyz",25)){
+            System.out.println("连接失败");
+            return -1;
+        }
         try {
             //220
             readline = bufferedReader.readLine();
@@ -251,5 +288,21 @@ public class ClientUtil {
         bufferedReader.close();
         printStream.close();
         socket.close();
+    }
+
+    private static int exe(String account, String password,String code) {
+        if(account.length()==0||password.length()==0) return -3;
+        if(!connect("diker.xyz",2525)) return -1;
+        printStream.println(code);
+        printStream.println(Base64Util.EncodeBase64(account.getBytes()));
+        printStream.println(Base64Util.EncodeBase64(password.getBytes()));
+        try {
+            readline = bufferedReader.readLine();
+            disconnect();
+            return Integer.parseInt(readline.split("-")[0]);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return -2;
+        }
     }
 }
