@@ -80,6 +80,18 @@ public class Task implements  Runnable{
                     printStream.println("0-SMTP启动"); //SMTP启动
                 }
             }
+            else if(readline.equals("500")){
+                account = Base64Util.DecodeBase64(bufferedReader.readLine());
+                String password = Base64Util.DecodeBase64(bufferedReader.readLine());
+                readline = bufferedReader.readLine();
+                if(mysql.isUserExist(account)){
+                    printStream.println("1-用户已存在");
+                }
+                else{
+                    mysql.addUser(account,password,readline);
+                    printStream.println("0-注册成功");
+                }
+            }
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
@@ -95,6 +107,9 @@ public class Task implements  Runnable{
         String password = Base64Util.DecodeBase64(bufferedReader.readLine());
         if(!mysql.isUserExist(account)){
             printStream.println("1-用户不存在"); //用户不存在
+        }
+        else if(mysql.isLocked(account)){
+            printStream.println("3-用户被禁"); //用户被禁
         }
         else if(!mysql.getUser(account, password)){
             printStream.println("2-密码错误"); //密码错误

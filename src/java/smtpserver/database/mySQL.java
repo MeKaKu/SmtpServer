@@ -32,6 +32,12 @@ public class mySQL {
         return resultSet.next();
     }
 
+    public boolean isLocked(String account) throws SQLException {
+        String sql = "SELECT * FROM `user` WHERE address='"+account+"'"+"AND islock=1";
+        ResultSet resultSet= statement.executeQuery(sql);
+        return resultSet.next();
+    }
+
     public void setPwd(String account,String nPwd) throws SQLException {
         String sql = "UPDATE `user` SET `password`='"+nPwd+"' WHERE address='"+account+"'";
         statement.executeUpdate(sql);
@@ -39,6 +45,11 @@ public class mySQL {
 
     public void setName(String account,String name) throws SQLException {
         String sql = "UPDATE `user` SET rname='"+name+"' WHERE address='"+account+"'";
+        statement.executeUpdate(sql);
+    }
+
+    public void addUser(String account,String password,String name) throws SQLException {
+        String sql = "INSERT INTO `user` VALUES('"+account+"','"+password+"','"+name+"',0,0)";
         statement.executeUpdate(sql);
     }
 

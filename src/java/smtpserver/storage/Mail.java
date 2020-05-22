@@ -26,7 +26,7 @@ public class Mail {
     }
 
     public void setData(String msg){
-        data = msg+"\r\n";
+        data = msg + "\r\n";
     }
 
     public void setSubject(String sub){
@@ -181,7 +181,7 @@ public class Mail {
                 return false;
             }
             //mail body
-            printStream.println(subject+"\r\n"+data+".");
+            printStream.println(subject+"\r\n"+data+"\r\n.");
             readline = bufferedReader.readLine();
             if(!readline.split(" ")[0].equals("250")){
                 System.out.println("mail body returned error.");
