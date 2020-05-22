@@ -170,7 +170,7 @@ public class Connection implements Runnable {
                         password = Base64Util.DecodeBase64(readline);
                         System.out.println("password:"+password);
                         try {
-                            if(mysql.getUser(account,password)){
+                            if(mysql.getUser(account,password)&&!mysql.isLocked(account)){
                                 printStream.println("235 Authentication successful");
                                 isAuth = true;
                             }
