@@ -18,7 +18,7 @@ public class Communication implements Runnable {
             try {
                 //System.out.println("Listening for a connection.");
                 Socket socket = serverSocket.accept(); //监听
-                //System.out.println("Connection accepted by." + socket.getInetAddress().getHostName());
+                System.out.println("Port:" + socket.getPort() + " Connection accepted by." + socket.getInetAddress().getHostName());
                 new Thread(new Task(socket)).start(); //创建新的线程处理连接请求
             } catch (IOException ex) {
                 ex.printStackTrace();

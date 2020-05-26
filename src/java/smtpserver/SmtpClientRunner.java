@@ -7,7 +7,7 @@ public class SmtpClientRunner {
     public static void main(String[] args){
 
         String subject = "换行测试";
-        String data = "第一行\r\n第二行。";
+        String data = "第一行\\\\r\\\\n第二行。";
         subject=subject.trim();
         //System.out.println(ClientUtil.register("diker@diker.xyz","diker","diker"));
         //System.out.println(ClientUtil.register("diker@diker.xyz","diker","diker"));
@@ -16,16 +16,16 @@ public class SmtpClientRunner {
 //        System.out.println(ClientUtil.isSmtpPause("root@diker.xyz","root"));
 //        System.out.println(ClientUtil.resumeSMTP("root@diker.xyz","root"));
 //        System.out.println(ClientUtil.isSmtpPause("root@diker.xyz","root"));
-        System.out.println(ClientUtil.login("t@diker.xyz","t"));
-        System.out.println(ClientUtil.sendMail("diker@diker.xyz","t@diker.xyz","封禁测试","正常用户向封禁用户发邮件","diker"));
-        System.out.println(ClientUtil.sendMail("t@diker.xyz","diker@diker.xyz","封禁测试","封禁用户向正常用户发邮件","t"));
-//        int ret;
-//        if((ret=ClientUtil.sendMail("joe@diker.xyz","test@diker.xyz",subject,data,"727899"))==0){
-//            System.out.println("Send mail successful.");
-//        }
-//        else{
-//            System.out.println("Send mail failed:"+ret);
-//        }
+//        System.out.println(ClientUtil.login("t@diker.xyz","t"));
+//        System.out.println(ClientUtil.sendMail("diker@diker.xyz","t@diker.xyz","封禁测试","正常用户向封禁用户发邮件","diker"));
+//        System.out.println(ClientUtil.sendMail("t@diker.xyz","diker@diker.xyz","封禁测试","封禁用户向正常用户发邮件","t"));
+        int ret;
+        if((ret=ClientUtil.sendMail("joe@diker.xyz","test@diker.xyz",subject,data,"727899"))==0){
+            System.out.println("Send mail successful.");
+        }
+        else{
+            System.out.println("Send mail failed:"+ret);
+        }
 
 //        System.out.println(ClientUtil.login("zzz","zz")); //1
 //        System.out.println(ClientUtil.login("test@diker.xyz","test")); //0
